@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Chef AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🍳</div>
+                <h1>Master Chef AI</h1>
+            </div>
+            <p class="subtitle">Upload food images, chat with AI, get recipes with step-by-step instructions and save your favorites</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="chat">
+                💬 Chat & Upload
+            </button>
+            <button class="nav-tab" data-tab="recipe">
+                📋 Recipe
+            </button>
+            <button class="nav-tab" data-tab="saved">
+                🔖 Saved
+            </button>
+        </div>
+
+        <div class="chat-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon-large">📷</div>
+                <p class="upload-text">Upload food image or start chatting</p>
+            </div>
+            <input type="file" class="file-input" id="fileInput" accept="image/*">
+            <div id="imagePreview"></div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-message bot-message">
+                    <div class="message-content">Hi! Upload a food image or tell me what you'd like to cook. I'll help you create an amazing recipe! 🍳</div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about recipes or describe what you want to cook...">
+                <button class="send-btn" id="sendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="scripts/main.js"></script>
+</body>
+</html>
