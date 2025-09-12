@@ -1,4 +1,5 @@
 import Recipe from "../models/recipeModel.js";
+import { generateRecipe } from "../services/recipeService.js";
 
 export const createItem = async (req, res) => {
   try {
@@ -32,5 +33,24 @@ export const deleteItem = async (req, res) => {
     res.status(200).json({ message: "Recipe deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const chef = async (req, res) => {
+  try {
+    const { foodName } = req.body;
+    
+    if (!foodName) {
+      return res.status(400).json({ error: "foodName is required" });
+    }
+    
+    const generatedRecipe = await generateRecipe(foodName);
+    
+    // Replace req.body with generated recipe and call createItem
+    req.body = generatedRecipe;
+    await createItem(req, res);
+    
+  } catch (err) {
+    res.status(500).json({ error: "Failed to generate and save recipe" });
   }
 };

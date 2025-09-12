@@ -1,5 +1,6 @@
 import "dotenv/config";
 import "./config/db.js";
+import OPENROUTER_CONFIG from "./config/llm.js"
 
 import app from "./app.js";
 
