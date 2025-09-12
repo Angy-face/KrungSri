@@ -1,3 +1,4 @@
+<!---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +30,7 @@
         </div>
 
         <div class="chat-section">
+            <div data-panel="recipe"> ... </div>
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon-large">📷</div>
                 <p class="upload-text">Upload food image or start chatting</p>
@@ -50,5 +52,114 @@
     </div>
 
     <script type="module" src="scripts/main.js"></script>
+    <script type="module" src="main.js"></script> 
+    
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Master Chef AI</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">🍳</div>
+        <h1>Master Chef AI</h1>
+      </div>
+      <p class="subtitle">
+        Upload food images, chat with AI, get recipes with step-by-step instructions and save your favorites
+      </p>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="chat">💬 Chat & Upload</button>
+      <button class="nav-tab" data-tab="recipe">📋 Recipe</button>
+      <button class="nav-tab" data-tab="saved">🔖 Saved</button>
+    </div>
+
+    <!-- CHAT PANEL -->
+    <div class="chat-section" data-panel="chat">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon-large">📷</div>
+        <p class="upload-text">Upload food image or start chatting</p>
+      </div>
+      <input type="file" class="file-input" id="fileInput" accept="image/*"/>
+      <div id="imagePreview"></div>
+
+      <div class="chat-container" id="chatContainer">
+        <div class="chat-message bot-message">
+          <div class="message-content">
+            Hi! Upload a food image or tell me what you'd like to cook. I'll help you create an amazing recipe! 🍳
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Ask about recipes or describe what you want to cook..."/>
+        <button class="send-btn" id="sendBtn">Send</button>
+      </div>
+    </div>
+
+    <!-- RECIPE PANEL -->
+    <div class="chat-section" data-panel="recipe" hidden>
+      <div id="recipeEmpty" style="text-align:center; color:#718096;">
+        <p>ยังไม่มีสูตรในหน้านี้</p>
+        <button id="createFromChat" class="send-btn">Create from Chat</button>
+        <button id="createFromImage" class="send-btn" style="margin-left:8px;">Create from Image</button>
+      </div>
+
+      <div id="recipeView" style="display:none;">
+        <h2 id="rTitle" style="margin-bottom:8px;"></h2>
+        <p id="rMeta" style="color:#718096; margin-bottom:16px;"></p>
+        <img id="rThumb" class="preview-image" style="max-height:220px; display:none;" alt="Recipe image">
+
+        <div style="display:flex; gap:16px; margin:12px 0;">
+          <button id="btnSave" class="send-btn">Save</button>
+          <button id="btnCook" class="send-btn">Start Cooking</button>
+          <button id="btnCopy" class="send-btn">Copy</button>
+        </div>
+
+        <div style="margin-top:16px;">
+          <h3>Ingredients</h3>
+          <div style="margin:8px 0;">
+            Servings:
+            <button id="servDec">-</button>
+            <span id="servings" style="padding:0 8px;">2</span>
+            <button id="servInc">+</button>
+          </div>
+          <ul id="rIngredients"></ul>
+        </div>
+
+        <div style="margin-top:16px;">
+          <h3>Steps</h3>
+          <ol id="rSteps"></ol>
+        </div>
+
+        <div style="margin-top:16px;">
+          <h3>Tips</h3>
+          <ul id="rTips"></ul>
+        </div>
+
+        <div style="margin-top:16px;">
+          <h3>Nutrition (per serving)</h3>
+          <div id="rNutrition" style="color:#4a5568;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVED PANEL -->
+    <div class="chat-section" data-panel="saved" hidden>
+      <h2 style="margin-bottom:12px;">Saved Recipes</h2>
+      <div id="savedList" style="display:grid; gap:12px;"></div>
+    </div>
+  </div>
+
+  <!-- ใช้ไฟล์จริง -->
+  <script type="module" src="scripts/main.js"></script>
 </body>
 </html>
