@@ -1,54 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Chef AI</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Master Chef AI</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <div class="logo-icon">🍳</div>
-                <h1>Master Chef AI</h1>
-            </div>
-            <p class="subtitle">Upload food images, chat with AI, get recipes with step-by-step instructions and save your favorites</p>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">🍳</div>
+        <h1>Master Chef AI</h1>
+      </div>
+      <p class="subtitle">
+        Upload food photos, chat with AI, generate step-by-step recipes, and save your favorites.
+      </p>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="chat">💬 Chat & Upload</button>
+      <button class="nav-tab" data-tab="recipe">📋 Recipe</button>
+      <button class="nav-tab" data-tab="saved">🔖 Saved</button>
+    </nav>
+
+    <!-- CHAT PANEL -->
+    <section class="panel" data-panel="chat">
+      <div class="upload-area" id="uploadArea" tabindex="0" role="button" aria-label="Upload food photo">
+        <div class="upload-icon-large">📷</div>
+        <p class="upload-text">Click or drop a food photo here</p>
+      </div>
+      <input type="file" class="file-input" id="fileInput" accept="image/*" />
+      <div id="imagePreview"></div>
+
+      <div class="chat-container" id="chatContainer" aria-live="polite">
+        <div class="chat-message bot-message">
+          <div class="avatar">🤖</div>
+          <div class="message-content">
+            Hi! Upload a photo or type a dish name. I’ll generate a recipe with clear steps. 🍳
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input
+          type="text"
+          class="chat-input"
+          id="chatInput"
+          placeholder="Type a dish name or a cooking question…"
+          aria-label="Chat"
+        />
+        <button class="send-btn" id="sendBtn">Send</button>
+      </div>
+    </section>
+
+    <!-- RECIPE PANEL -->
+    <section class="panel" data-panel="recipe" hidden>
+      <div id="recipeEmpty" class="empty-state">
+        <p>No recipe here yet</p>
+        <div class="row">
+          <button id="createFromChat" class="btn">Create from Chat</button>
+          <button id="createFromImage" class="btn btn-ghost">Create from Image</button>
+        </div>
+      </div>
+
+      <article id="recipeView" class="recipe-view" style="display:none;">
+        <h2 id="rTitle" class="recipe-title"></h2>
+        <p id="rMeta" class="recipe-meta"></p>
+        <img id="rThumb" class="preview-image" style="display:none;" alt="Recipe image" />
+
+        <div class="recipe-actions">
+          <button id="btnSave" class="btn">Save</button>
+          <button id="btnCook" class="btn btn-ghost">Start Cooking</button>
+          <button id="btnCopy" class="btn btn-ghost">Copy</button>
+          <button id="btnDelete" class="btn btn-ghost danger">Delete</button>
         </div>
 
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="chat">
-                💬 Chat & Upload
-            </button>
-            <button class="nav-tab" data-tab="recipe">
-                📋 Recipe
-            </button>
-            <button class="nav-tab" data-tab="saved">
-                🔖 Saved
-            </button>
-        </div>
-
-        <div class="chat-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon-large">📷</div>
-                <p class="upload-text">Upload food image or start chatting</p>
+        <section class="recipe-section">
+          <h3>Ingredients</h3>
+          <div class="row servings-row">
+            <span>Servings:</span>
+            <div class="servings">
+              <button id="servDec" class="chip" aria-label="Decrease servings">−</button>
+              <strong id="servings">2</strong>
+              <button id="servInc" class="chip" aria-label="Increase servings">+</button>
             </div>
-            <input type="file" class="file-input" id="fileInput" accept="image/*">
-            <div id="imagePreview"></div>
+          </div>
+          <ul id="rIngredients" class="ing-list"></ul>
+        </section>
 
-            <div class="chat-container" id="chatContainer">
-                <div class="chat-message bot-message">
-                    <div class="message-content">Hi! Upload a food image or tell me what you'd like to cook. I'll help you create an amazing recipe! 🍳</div>
-                </div>
-            </div>
+        <section class="recipe-section">
+          <h3>Steps</h3>
+          <ol id="rSteps" class="step-list"></ol>
+        </section>
 
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about recipes or describe what you want to cook...">
-                <button class="send-btn" id="sendBtn">Send</button>
-            </div>
-        </div>
-    </div>
+        <section class="recipe-section">
+          <h3>Tips</h3>
+          <ul id="rTips" class="ing-list"></ul>
+        </section>
 
-    <script type="module" src="scripts/main.js"></script>
+        <section class="recipe-section">
+          <h3>Nutrition (per serving)</h3>
+          <div id="rNutrition" class="nutrition"></div>
+        </section>
+      </article>
+    </section>
+
+    <!-- SAVED PANEL -->
+    <section class="panel" data-panel="saved" hidden>
+      <h2 class="saved-title">Saved Recipes</h2>
+      <div id="savedList" class="grid"></div>
+    </section>
+
+    <!-- Status bar (no pop-ups) -->
+    <div id="statusBar" style="margin-top:12px;color:#6b7280;"></div>
+  </div>
+
+  <script type="module" src="scripts/main.js"></script>
 </body>
 </html>
