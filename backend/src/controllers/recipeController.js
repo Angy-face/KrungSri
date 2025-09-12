@@ -1,5 +1,5 @@
 import Recipe from "../models/recipeModel.js";
-import { generateRecipe } from "../services/recipeService.js";
+import { generateRecipe, generateRecipeFromImage } from "../services/recipeService.js";
 
 export const createItem = async (req, res) => {
   try {
@@ -52,5 +52,27 @@ export const chef = async (req, res) => {
     
   } catch (err) {
     res.status(500).json({ error: "Failed to generate and save recipe" });
+  }
+};
+
+export const chefImage = async (req, res) => {
+  try {
+    const { base64Image } = req.body;
+    
+    if (!base64Image) {
+      return res.status(400).json({ error: "base64Image is required" });
+    }
+    
+    console.log("Processing image, base64 length:", base64Image.length);
+    
+    const generatedRecipe = await generateRecipeFromImage(base64Image);
+    
+    // Save using createItem
+    req.body = generatedRecipe;
+    await createItem(req, res);
+    
+  } catch (err) {
+    console.error("Image processing error:", err.message);
+    res.status(500).json({ error: "Failed to generate recipe from image", details: err.message });
   }
 };
