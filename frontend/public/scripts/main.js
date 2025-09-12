@@ -1,289 +1,21 @@
-// Tab switching functionality
-/*const tabs = document.querySelectorAll('.nav-tab');
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        console.log(`Switched to ${tab.dataset.tab} tab`);
-    });
-});
-
-// Chat and upload functionality
-const fileInput = document.getElementById('fileInput');
-const uploadArea = document.getElementById('uploadArea');
-const imagePreview = document.getElementById('imagePreview');
-const chatContainer = document.getElementById('chatContainer');
-const chatInput = document.getElementById('chatInput');
-const sendBtn = document.getElementById('sendBtn');
-
-// Upload functionality
-uploadArea.addEventListener('click', () => {
-    fileInput.click();
-});
-
-uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-});
-
-uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('dragover');
-});
-
-uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        handleFileSelect(files[0]);
-    }
-});
-
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        handleFileSelect(e.target.files[0]);
-    }
-});
-
-function handleFileSelect(file) {
-    if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            displayImagePreview(e.target.result, file.name);
-            addBotMessage("Great! I can see your food image. What would you like to know about it or what recipe would you like me to create?");
-        };
-        reader.readAsDataURL(file);
-    } else {
-        alert('Please select an image file.');
-    }
-}
-
-function displayImagePreview(src, fileName) {
-    imagePreview.innerHTML = `
-        <img src="${src}" alt="Uploaded food image" class="preview-image">
-        <p style="text-align: center; color: #718096; margin: 0.5rem 0; font-size: 0.9rem;">${fileName}</p>
-        <div style="text-align: center;">
-            <button class="remove-image" onclick="removeImage()">Remove Image</button>
-        </div>
-    `;
-}
-
-function removeImage() {
-    imagePreview.innerHTML = '';
-    fileInput.value = '';
-}
-window.removeImage = removeImage;
-// Chat functionality
-sendBtn.addEventListener('click', sendMessage);
-chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
-
-function sendMessage() {
-    const message = chatInput.value.trim();
-    if (message) {
-        addUserMessage(message);
-        chatInput.value = '';
-        
-        // Simulate bot response
-        setTimeout(() => {
-            addBotMessage("I'd be happy to help you with that recipe! Let me analyze your request and provide you with detailed instructions.");
-        }, 1000);
-    }
-}
-
-function addUserMessage(message) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat-message user-message';
-    messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
-    chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function addBotMessage(message) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat-message bot-message';
-    messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
-    chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-    
-}
-*/
-
-
-
-
-// ===== Tab switching functionality =====
-/*
-const tabs = document.querySelectorAll('.nav-tab');
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    console.log(`Switched to ${tab.dataset.tab} tab`);
-  });
-});
-
-// ===== Chat and upload elements =====
-const fileInput     = document.getElementById('fileInput');
-const uploadArea    = document.getElementById('uploadArea');
-const imagePreview  = document.getElementById('imagePreview');
-const chatContainer = document.getElementById('chatContainer');
-const chatInput     = document.getElementById('chatInput');
-const sendBtn       = document.getElementById('sendBtn');
-
-// ===== Helpers =====
-function autoscroll() {
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function isImageFile(file) {
-  return file && file.type && file.type.startsWith('image/');
-}
-
-// ===== Upload functionality =====
-uploadArea.addEventListener('click', () => {
-  fileInput.click();
-});
-
-uploadArea.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  uploadArea.classList.add('dragover');
-});
-
-uploadArea.addEventListener('dragleave', () => {
-  uploadArea.classList.remove('dragover');
-});
-
-uploadArea.addEventListener('drop', (e) => {
-  e.preventDefault();
-  uploadArea.classList.remove('dragover');
-  const file = e.dataTransfer?.files?.[0];
-  if (!file) return;
-  if (!isImageFile(file)) {
-    alert('Please select an image file.');
-    return;
-  }
-  handleFileSelect(file);
-});
-
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  if (!isImageFile(file)) {
-    alert('Please select an image file.');
-    fileInput.value = '';
-    return;
-  }
-  handleFileSelect(file);
-});
-
-function handleFileSelect(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    displayImagePreview(e.target.result, file.name);
-    addBotMessage(
-      "Great! I can see your food image. What would you like to know about it or what recipe would you like me to create?"
-    );
-  };
-  reader.readAsDataURL(file);
-}
-
-function displayImagePreview(src, fileName) {
-  imagePreview.innerHTML = `
-    <img src="${src}" alt="Uploaded food image" class="preview-image">
-    <p style="text-align: center; color: #718096; margin: 0.5rem 0; font-size: 0.9rem;">${fileName}</p>
-    <div style="text-align: center;">
-      <button class="remove-image">Remove Image</button>
-    </div>
-  `;
-  const btn = imagePreview.querySelector('.remove-image');
-  btn.addEventListener('click', removeImage, { once: true });
-}
-
-function removeImage() {
-  imagePreview.innerHTML = '';
-  fileInput.value = '';
-}
-
-// ===== Chat functionality =====
-sendBtn.addEventListener('click', sendMessage);
-chatInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-function sendMessage() {
-  const message = chatInput.value.trim();
-  if (!message) return;
-
-  addUserMessage(message);
-  chatInput.value = '';
-  chatInput.focus();
-
-  // prevent spamming while bot "types"
-  sendBtn.disabled = true;
-
-  setTimeout(() => {
-    addBotMessage(
-      "I'd be happy to help you with that recipe! Let me analyze your request and provide you with detailed instructions."
-    );
-    sendBtn.disabled = false;
-    chatInput.focus();
-  }, 800);
-}
-
-function addUserMessage(message) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'chat-message user-message';
-  messageDiv.innerHTML = `<div class="message-content">${escapeHTML(message)}</div>`;
-  chatContainer.appendChild(messageDiv);
-  autoscroll();
-}
-
-function addBotMessage(message) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'chat-message bot-message';
-  messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
-  chatContainer.appendChild(messageDiv);
-  autoscroll();
-}
-
-// simple escape to avoid HTML injection in user messages
-function escapeHTML(str) {
-  return str
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
-*/
-
+/* =========================
+   Tabs
+   ========================= */
 const tabs   = document.querySelectorAll('.nav-tab');
 const panels = document.querySelectorAll('[data-panel]');
-
-function switchTab(name) {
-  // toggle active state on tab buttons
+function switchTab(name){
   tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-  // show/hide panels
-  panels.forEach(p => { p.hidden = p.dataset.panel !== name; });
+  panels.forEach(p => p.hidden = (p.dataset.panel !== name));
 }
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-});
-
-// เปิดครั้งแรกให้โชว์ chat
+tabs.forEach(tab => tab.addEventListener('click', async () => {
+  switchTab(tab.dataset.tab);
+  if (tab.dataset.tab === 'saved') await renderSavedList();
+}));
 switchTab('chat');
 
-// ===== Chat and upload elements =====
+/* =========================
+   Elements
+   ========================= */
 const fileInput     = document.getElementById('fileInput');
 const uploadArea    = document.getElementById('uploadArea');
 const imagePreview  = document.getElementById('imagePreview');
@@ -291,131 +23,353 @@ const chatContainer = document.getElementById('chatContainer');
 const chatInput     = document.getElementById('chatInput');
 const sendBtn       = document.getElementById('sendBtn');
 
-// ===== Helpers =====
-function autoscroll() {
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+const createFromChatBtn  = document.getElementById('createFromChat');
+const createFromImageBtn = document.getElementById('createFromImage');
+
+const rTitle = document.getElementById('rTitle');
+const rMeta  = document.getElementById('rMeta');
+const rThumb = document.getElementById('rThumb');
+const rIng   = document.getElementById('rIngredients');
+const rSteps = document.getElementById('rSteps');
+const rTips  = document.getElementById('rTips');
+const rNutri = document.getElementById('rNutrition');
+const rView  = document.getElementById('recipeView');
+const rEmpty = document.getElementById('recipeEmpty');
+const servEl = document.getElementById('servings');
+
+const btnDelete = document.getElementById('btnDelete');
+const btnSave   = document.getElementById('btnSave');
+
+const savedList = document.getElementById('savedList');
+const statusBar = document.getElementById('statusBar');
+
+let currentRecipe = null;
+
+/* =========================
+   Helpers
+   ========================= */
+const API_BASE = "http://localhost:3000"; // set to your backend base URL
+
+const escapeHTML = (s='') => s
+  .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+  .replaceAll('"','&quot;').replaceAll("'",'&#39;');
+
+const autoscroll = () => { chatContainer.scrollTop = chatContainer.scrollHeight; };
+
+const isImage = f => f && f.type && f.type.startsWith('image/');
+
+function setStatus(msg, type='info'){ // info | success | error
+  const color = type === 'success' ? '#16a34a' : type === 'error' ? '#b42318' : '#6b7280';
+  statusBar.textContent = msg || '';
+  statusBar.style.color = color;
 }
 
-function isImageFile(file) {
-  return file && file.type && file.type.startsWith('image/');
-}
-
-// ===== Upload functionality =====
-uploadArea.addEventListener('click', () => {
-  fileInput.click();
+/* =========================
+   Upload
+   ========================= */
+uploadArea.addEventListener('click', () => fileInput.click());
+['dragover','dragleave','drop'].forEach(type=>{
+  uploadArea.addEventListener(type, e=>{
+    e.preventDefault();
+    if (type==='dragover') uploadArea.classList.add('dragover');
+    else uploadArea.classList.remove('dragover');
+  });
 });
-
-uploadArea.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  uploadArea.classList.add('dragover');
+uploadArea.addEventListener('drop', e=>{
+  const f = e.dataTransfer?.files?.[0]; if (!f) return;
+  if (!isImage(f)) { setStatus('Please upload an image file.', 'error'); return; }
+  handleFile(f);
 });
-
-uploadArea.addEventListener('dragleave', () => {
-  uploadArea.classList.remove('dragover');
+fileInput.addEventListener('change', e=>{
+  const f = e.target.files?.[0]; if (!f) return;
+  if (!isImage(f)) { setStatus('Please upload an image file.', 'error'); fileInput.value=''; return; }
+  handleFile(f);
 });
-
-uploadArea.addEventListener('drop', (e) => {
-  e.preventDefault();
-  uploadArea.classList.remove('dragover');
-  const file = e.dataTransfer?.files?.[0];
-  if (!file) return;
-  if (!isImageFile(file)) {
-    alert('Please select an image file.');
-    return;
-  }
-  handleFileSelect(file);
-});
-
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  if (!isImageFile(file)) {
-    alert('Please select an image file.');
-    fileInput.value = '';
-    return;
-  }
-  handleFileSelect(file);
-});
-
-function handleFileSelect(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    displayImagePreview(e.target.result, file.name);
-    addBotMessage(
-      "Great! I can see your food image. What would you like to know about it or what recipe would you like me to create?"
-    );
+function handleFile(file){
+  const r = new FileReader();
+  r.onload = e => {
+    renderPreview(e.target.result, file.name);
+    addBotMessage('Great! I can see your food photo. What recipe would you like me to create?');
+    setStatus('Photo loaded.', 'success');
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(file);
 }
-
-function displayImagePreview(src, fileName) {
+function renderPreview(src, name){
   imagePreview.innerHTML = `
-    <img src="${src}" alt="Uploaded food image" class="preview-image">
-    <p style="text-align: center; color: #718096; margin: 0.5rem 0; font-size: 0.9rem;">${fileName}</p>
-    <div style="text-align: center;">
-      <button class="remove-image">Remove Image</button>
+    <img src="${src}" alt="Uploaded food photo" class="preview-image">
+    <p style="text-align:center;color:#6b7280;margin:.5rem 0 .75rem;font-size:.95rem;">${escapeHTML(name||'')}</p>
+    <div style="text-align:center;">
+      <button class="remove-image" id="removeImg">Remove Photo</button>
     </div>
   `;
-  const btn = imagePreview.querySelector('.remove-image');
-  btn.addEventListener('click', removeImage, { once: true });
+  document.getElementById('removeImg').addEventListener('click', ()=>{
+    imagePreview.innerHTML = ''; fileInput.value = '';
+    setStatus('Photo removed.');
+  }, { once: true });
 }
 
-function removeImage() {
-  imagePreview.innerHTML = '';
-  fileInput.value = '';
-}
-
-// ===== Chat functionality =====
+/* =========================
+   Chat
+   ========================= */
 sendBtn.addEventListener('click', sendMessage);
-chatInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    sendMessage();
+chatInput.addEventListener('keydown', e=>{
+  if (e.key === 'Enter'){ e.preventDefault(); sendMessage(); }
+});
+function addUserMessage(msg){
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-message user-message';
+  wrap.innerHTML = `<div class="message-content">${escapeHTML(msg)}</div>`;
+  chatContainer.appendChild(wrap); autoscroll();
+}
+function addBotMessage(html){
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-message bot-message';
+  wrap.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${html}</div>`;
+  chatContainer.appendChild(wrap); autoscroll();
+}
+function sendMessage(){
+  const text = chatInput.value.trim();
+  if (!text){ setStatus('Please type a dish name or a question first.', 'error'); chatInput.focus(); return; }
+  addUserMessage(text); chatInput.value=''; chatInput.focus();
+  sendBtn.disabled = true;
+  setTimeout(()=>{ addBotMessage('Got it! I will prepare a detailed recipe.'); sendBtn.disabled = false; }, 500);
+}
+
+/* =========================
+   API helpers (with silent mock fallback)
+   ========================= */
+async function apiListRecipes(params={}){
+  try{
+    const qs = new URLSearchParams(params).toString();
+    const r = await fetch(`${API_BASE}/api/recipes${qs ? '?'+qs : ''}`);
+    if (!r.ok) throw new Error('no-backend');
+    return await r.json();
+  }catch{
+    setStatus('Demo mode: showing sample recipes (backend not connected).', 'info');
+    return [
+      { _id:'1', title:'Pad Thai', imageUrl:'https://images.unsplash.com/photo-1604908176997-431cce38bb50?q=80&w=1200&auto=format&fit=crop', tags:['thai'] },
+      { _id:'2', title:'Tom Yum', imageUrl:'https://images.unsplash.com/photo-1598899134739-24a20d54f1d5?q=80&w=1200&auto=format&fit=crop', tags:['soup'] },
+      { _id:'3', title:'Green Curry', imageUrl:'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop', tags:['curry'] },
+    ];
   }
+}
+async function apiGetRecipe(id){
+  try{
+    const r = await fetch(`${API_BASE}/api/recipes/${id}`);
+    if (!r.ok) throw new Error('no-backend');
+    return await r.json();
+  }catch{
+    setStatus('Demo mode: showing a sample recipe.', 'info');
+    return {
+      _id:id, title:'Pad Thai', servings:2, estimatedCalories:780, tags:['thai','stir-fry'],
+      imageUrl:'https://images.unsplash.com/photo-1604908176997-431cce38bb50?q=80&w=1200&auto=format&fit=crop',
+      ingredients:[{name:'Rice noodles',qty:'200 g'},{name:'Eggs',qty:'2'},{name:'Tamarind sauce',qty:'3 tbsp'}],
+      steps:['Soak noodles until pliable','Stir-fry aromatics and protein','Add sauce & noodles; toss well','Finish with peanuts and lime'],
+      tips:['Do not over-soak noodles','Balance sweet/sour/salty to taste'],
+      nutrition:'Carbs 86g • Protein 28g • Fat 22g'
+    };
+  }
+}
+async function apiDeleteRecipe(id){
+  try{
+    const r = await fetch(`${API_BASE}/api/recipes/${id}`, { method:'DELETE' });
+    if (!r.ok) throw new Error('no-backend');
+    return await r.json();
+  }catch{
+    setStatus('Demo mode: simulated delete.', 'info');
+    return { ok:true };
+  }
+}
+async function apiGenerateByName(name, options={}){
+  try{
+    const r = await fetch(`${API_BASE}/api/generate-text`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, options })
+    });
+    if (!r.ok) throw new Error('no-backend');
+    return await r.json();
+  }catch{
+    setStatus('Demo mode: generated sample recipe.', 'info');
+    return {
+      _id: 'demo-'+Date.now(),
+      title: name,
+      imageUrl: '',
+      ingredients: [{name:'Ingredient A',qty:'100 g'},{name:'Ingredient B',qty:'2 tbsp'}],
+      steps: [`Prepare basics for ${name}`, 'Cook and season to taste'],
+      servings: options?.servings ?? 2,
+      estimatedCalories: 500,
+      tags: ['generated','demo']
+    };
+  }
+}
+async function apiCreateRecipe(recipe){
+  try{
+    const r = await fetch(`${API_BASE}/api/recipes`,{
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(recipe)
+    });
+    if (!r.ok) throw new Error('no-backend');
+    return await r.json();
+  }catch{
+    setStatus('Demo mode: simulated save.', 'info');
+    return { ...recipe, _id: 'local-'+Date.now() };
+  }
+}
+async function apiUpdateRecipe(id, data){
+  try{
+    const r = await fetch(`${API_BASE}/api/recipes/${id}`,{
+      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error('no-backend');
+    return await r.json();
+  }catch{
+    setStatus('Demo mode: simulated update.', 'info');
+    return { ...data, _id: id };
+  }
+}
+
+/* =========================
+   Recipe render / actions
+   ========================= */
+function renderRecipe(data){
+  currentRecipe = data;
+  rEmpty.style.display = 'none';
+  rView.style.display  = '';
+
+  const servings = data.servings ?? 2;
+  const tags = Array.isArray(data.tags) ? data.tags.join(' · ') : '';
+  const kcal = data.estimatedCalories ? `~${data.estimatedCalories} kcal` : '';
+
+  rTitle.textContent = data.title || 'Untitled';
+  rMeta.textContent  = [ `${servings} servings`, tags, kcal ].filter(Boolean).join(' • ');
+
+  if (data.imageUrl){ rThumb.src = data.imageUrl; rThumb.style.display = 'block'; }
+  else { rThumb.style.display = 'none'; }
+
+  const ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
+  rIng.innerHTML = ingredients.map(it=>{
+    const qty = it.qty ? `<strong>${escapeHTML(it.qty)}</strong> ` : '';
+    return `<li class="ing-item"><input type="checkbox"> <span>${qty}${escapeHTML(it.name||'')}</span></li>`;
+  }).join('');
+
+  const steps = Array.isArray(data.steps) ? data.steps : [];
+  rSteps.innerHTML = steps.map(s=>`<li>${escapeHTML(s)}</li>`).join('');
+
+  const tips = Array.isArray(data.tips) ? data.tips : [];
+  rTips.innerHTML = tips.map(t=>`<li class="ing-item">${escapeHTML(t)}</li>`).join('');
+
+  rNutri.textContent = data.nutrition || data.nutritionPerServing || '';
+  servEl.textContent = servings;
+  setStatus('Recipe ready.', 'success');
+}
+
+function showRecipeLoading(isLoading){
+  if (!rEmpty) return;
+  rEmpty.style.opacity = isLoading ? .6 : 1;
+  rEmpty.style.pointerEvents = isLoading ? 'none' : '';
+}
+
+// servings +/- (UI only; add scaling logic if you parse numeric quantities)
+document.getElementById('servDec').addEventListener('click', ()=> {
+  servEl.textContent = Math.max(1, (parseInt(servEl.textContent||'1',10) - 1));
+});
+document.getElementById('servInc').addEventListener('click', ()=> {
+  servEl.textContent = (parseInt(servEl.textContent||'1',10) + 1);
 });
 
-function sendMessage() {
-  const message = chatInput.value.trim();
-  if (!message) return;
+// Create from Chat / Image
+createFromChatBtn?.addEventListener('click', async ()=>{
+  const name = (chatInput?.value || '').trim();
+  if (!name){ setStatus('Please type a dish name in chat first.', 'error'); return; }
+  try{
+    showRecipeLoading(true);
+    const recipe = await apiGenerateByName(name, { calorieCap: 1000 });
+    renderRecipe(recipe); switchTab('recipe');
+  }catch(e){ setStatus(e.message || 'Generate failed', 'error'); }
+  finally{ showRecipeLoading(false); }
+});
+createFromImageBtn?.addEventListener('click', ()=>{
+  setStatus('Hook this to your /api/generate (image) endpoint when ready.', 'info');
+});
 
-  addUserMessage(message);
-  chatInput.value = '';
-  chatInput.focus();
+// Save / Update
+btnSave?.addEventListener('click', async ()=>{
+  try{
+    if (!currentRecipe) return;
+    if (currentRecipe._id){
+      const updated = await apiUpdateRecipe(currentRecipe._id, currentRecipe);
+      renderRecipe(updated); setStatus('Recipe updated.', 'success');
+    }else{
+      const created = await apiCreateRecipe(currentRecipe);
+      renderRecipe(created); setStatus('Recipe saved.', 'success');
+    }
+  }catch(e){ setStatus(e.message || 'Save failed', 'error'); }
+});
 
-  // prevent spamming while bot "types"
-  sendBtn.disabled = true;
+// Delete on Recipe page
+btnDelete?.addEventListener('click', async ()=>{
+  if (!currentRecipe?._id){ setStatus('No recipe id to delete.', 'error'); return; }
+  await apiDeleteRecipe(currentRecipe._id);
+  currentRecipe = null;
+  switchTab('saved');
+  await renderSavedList();
+  setStatus('Recipe deleted.', 'success');
+});
 
-  setTimeout(() => {
-    addBotMessage(
-      "I'd be happy to help you with that recipe! Let me analyze your request and provide you with detailed instructions."
-    );
-    sendBtn.disabled = false;
-    chatInput.focus();
-  }, 800);
+/* =========================
+   Saved list (with event delegation)
+   ========================= */
+async function renderSavedList(){
+  if (!savedList) return;
+  savedList.innerHTML = `<p style="color:#6b7280">Loading…</p>`;
+  try{
+    const items = await apiListRecipes();
+    if (!items.length){
+      savedList.innerHTML = `<p style="color:#6b7280">No saved recipes yet.</p>`;
+      return;
+    }
+    savedList.innerHTML = items.map(item=>{
+      const tag = (item.tags && item.tags[0]) ? item.tags[0] : 'recipe';
+      const thumb = item.imageUrl ? `<img alt="${escapeHTML(item.title)}" src="${item.imageUrl}">` : '';
+      return `
+        <article class="card" data-id="${item._id}">
+          ${thumb}
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <strong>${escapeHTML(item.title)}</strong>
+              <span class="pill">${escapeHTML(tag)}</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-ghost open-recipe">Open</button>
+              <button class="btn-ghost danger delete-recipe">Delete</button>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+  }catch(e){
+    savedList.innerHTML = `<p style="color:#b42318">Error: ${escapeHTML(e.message || 'Load failed')}</p>`;
+  }
 }
 
-function addUserMessage(message) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'chat-message user-message';
-  messageDiv.innerHTML = `<div class="message-content">${escapeHTML(message)}</div>`;
-  chatContainer.appendChild(messageDiv);
-  autoscroll();
-}
+// Event delegation for Saved grid
+savedList.addEventListener('click', async (e)=>{
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const id = card.dataset.id;
 
-function addBotMessage(message) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'chat-message bot-message';
-  messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
-  chatContainer.appendChild(messageDiv);
-  autoscroll();
-}
+  if (e.target.classList.contains('open-recipe')){
+    const rec = await apiGetRecipe(id);
+    renderRecipe(rec); switchTab('recipe');
+  }
 
-// simple escape to avoid HTML injection in user messages
-function escapeHTML(str) {
-  return str
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
+  if (e.target.classList.contains('delete-recipe')){
+    await apiDeleteRecipe(id);
+    // Optimistic remove
+    card.remove();
+    setStatus('Recipe deleted.', 'success');
+    // If grid becomes empty, show message
+    if (!savedList.querySelector('.card')){
+      savedList.innerHTML = `<p style="color:#6b7280">No saved recipes yet.</p>`;
+    }
+  }
+});
