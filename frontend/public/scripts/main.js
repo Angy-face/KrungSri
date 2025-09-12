@@ -11,7 +11,10 @@ function switchTab(name){
 }
 tabs.forEach(tab => tab.addEventListener('click', async () => {
   switchTab(tab.dataset.tab);
-  if (tab.dataset.tab === 'saved') await renderSavedList();
+  if (tab.dataset.tab === 'saved') {
+    const value = document.getElementById('timeFilter')?.value;
+    await renderSavedList(value ? Number(value) : undefined);
+  }
 }));
 switchTab('chat');
 
@@ -57,7 +60,6 @@ function setStatus(msg, type='info'){
   const color = type==='success' ? '#16a34a' : type==='error' ? '#b42318' : '#6b7280';
   statusBar.textContent = msg || ''; statusBar.style.color = color;
 }
-// ObjectId -> timestamp (sec) to sort newest client-side (backend getItems has no sort)
 const objectIdTime = (id='') => parseInt((id||'').slice(0,8), 16) || 0;
 
 /* =========================
@@ -101,7 +103,6 @@ function renderPreview(src, name){
     imagePreview.innerHTML = ''; fileInput.value = ''; setStatus('Photo removed.');
   }, { once: true });
 }
-// backend wants raw base64 (no data URL header)
 const dataURLtoRawBase64 = (dataURL='') => (dataURL.split(',')[1] || '').trim();
 
 /* =========================
@@ -131,8 +132,6 @@ function sendMessage(){
 
 /* =========================
    Backend -> UI shape adapter
-   Backend model:
-   { name, time, ingredients[{amount,unit,name}], instructions[{step,description}], nutrition{calories,carbs,fat,protein} }
    ========================= */
 function toUIRecipe(b){
   const ingredients = (b.ingredients||[]).map(it => ({
@@ -201,86 +200,50 @@ document.getElementById('servInc').addEventListener('click', ()=> {
   servEl.textContent = (parseInt(servEl.textContent||'1',10) + 1);
 });
 
-btnDelete?.addEventListener('click', async ()=>{
+btnDelete?.addEventListener('click', async ()=> {
   if (!currentRecipe?._id){ setStatus('No recipe id to delete.', 'error'); return; }
   await api.deleteRecipe(currentRecipe._id);
   currentRecipe = null;
   switchTab('saved');
-  await renderSavedList();
+  const value = document.getElementById('timeFilter')?.value;
+  await renderSavedList(value ? Number(value) : undefined);
   setStatus('Recipe deleted.', 'success');
 });
 
-// Back to Chat buttons (all panels)
 document.querySelectorAll('.btnBackToChat').forEach(btn => {
   btn.addEventListener('click', () => switchTab('chat'));
 });
 
-
-
-
-
-/* =========================
-   Generate from chat / image
-   ========================= */
-createFromChatBtn?.addEventListener('click', async ()=>{
-  const name = (chatInput?.value || '').trim();
-  if (!name){ setStatus('Please type a dish name in chat first.', 'error'); return; }
-
-  // Current backend returns { message: "OK" }, so refetch list to get the created doc
-  await api.generateByText(name);
-  setStatus('Generated. Loading…');
-
-  const items = await api.listRecipes();
-  // Prefer newest with matching name; else newest overall
-  const byName = items.filter(x => (x.name||'').toLowerCase() === name.toLowerCase());
-  const newest = (arr) => arr.sort((a,b)=> objectIdTime(b._id) - objectIdTime(a._id))[0];
-  const picked = newest(byName.length ? byName : items);
-
-  renderRecipe(toUIRecipe(picked));
-  switchTab('recipe');
-  setStatus('Recipe generated.', 'success');
-});
-
-createFromImageBtn?.addEventListener('click', async ()=>{
-  const f = fileInput.files?.[0];
-  if (!f){ setStatus('Choose a photo first.', 'error'); return; }
-
-  const fr = new FileReader();
-  fr.onload = async (e) => {
-    const rawBase64 = dataURLtoRawBase64(e.target.result);
-    await api.generateByImageBase64(rawBase64);
-    setStatus('Generated from image. Loading…');
-
-    const items = await api.listRecipes();
-    const newest = items.sort((a,b)=> objectIdTime(b._id) - objectIdTime(a._id))[0];
-
-    renderRecipe(toUIRecipe(newest));
-    switchTab('recipe');
-    setStatus('Recipe generated from image.', 'success');
-  };
-  fr.readAsDataURL(f);
+btnClose?.addEventListener('click', async () => {
+  currentRecipe = null;
+  rView.style.display = 'none';
+  rEmpty.style.display = '';
+  switchTab('saved');
+  const value = document.getElementById('timeFilter')?.value;
+  await renderSavedList(value ? Number(value) : undefined);
+  setStatus('Closed recipe.', 'info');
 });
 
 /* =========================
-   Saved list + delegation
+   Saved list + filter
    ========================= */
-async function renderSavedList(){
+async function renderSavedList(time) {
   if (!savedList) return;
   savedList.innerHTML = `<p style="color:#6b7280">Loading…</p>`;
-  try{
-    const items = await api.listRecipes();
-    if (!items.length){
-      savedList.innerHTML = `<p style="color:#6b7280">No saved recipes yet.</p>`;
+  try {
+    const items = await api.listRecipes(time);
+    if (!items.length) {
+      savedList.innerHTML = `<p style="color:#6b7280">No recipes found.</p>`;
       return;
     }
-    savedList.innerHTML = items.map(item=>{
-      const time = (item.time!=null) ? `${item.time} min` : '';
+    savedList.innerHTML = items.map(item => {
+      const timeText = (item.time!=null) ? `${item.time} min` : '';
       return `
         <article class="card" data-id="${item._id}">
           <div class="card-body">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
               <strong>${escapeHTML(item.name || 'Untitled')}</strong>
-              ${time ? `<span class="pill">${time}</span>` : ``}
+              ${timeText ? `<span class="pill">${timeText}</span>` : ``}
             </div>
             <div style="display:flex;gap:8px;">
               <button class="btn-ghost open-recipe">Open</button>
@@ -289,17 +252,16 @@ async function renderSavedList(){
           </div>
         </article>`;
     }).join('');
-  }catch{
+  } catch {
     savedList.innerHTML = `<p style="color:#b42318">Error loading</p>`;
   }
 }
 
-savedList.addEventListener('click', async (e)=>{
+savedList.addEventListener('click', async (e)=> {
   const card = e.target.closest('.card'); if (!card) return;
   const id = card.dataset.id;
 
   if (e.target.classList.contains('open-recipe')){
-    // Since there is no GET /recipes/:id in this backend yet, reload list and find it
     const items = await api.listRecipes();
     const rec = items.find(x => x._id === id);
     if (rec){ renderRecipe(toUIRecipe(rec)); switchTab('recipe'); }
@@ -310,20 +272,40 @@ savedList.addEventListener('click', async (e)=>{
     card.remove();
     setStatus('Recipe deleted.', 'success');
     if (!savedList.querySelector('.card')){
-      savedList.innerHTML = `<p style="color:#6b7280">No saved recipes yet.</p>`;
+      savedList.innerHTML = `<p style="color:#6b7280">No recipes yet.</p>`;
     }
   }
 });
 
-btnClose?.addEventListener('click', async () => {
-  // เคลียร์สถานะ recipe ปัจจุบัน (ถ้าอยากคงไว้ก็เอา 2 บรรทัดแรกออกได้)
-  currentRecipe = null;
-  rView.style.display = 'none';
-  rEmpty.style.display = '';
-
-  // กลับไปแท็บ Saved (หรือจะเปลี่ยนเป็น 'chat' ก็ได้)
-  switchTab('saved');
-  await renderSavedList();
-
-  setStatus('Closed recipe.', 'info');
+/* =========================
+   Dropdown filter listener
+   ========================= */
+document.getElementById('timeFilter')?.addEventListener('change', async (e) => {
+  const value = e.target.value;
+  await renderSavedList(value ? Number(value) : undefined);
 });
+
+// Custom dropdown logic :D
+// Custom dropdown logic
+const timeFilterBtn = document.getElementById("timeFilterBtn");
+const timeFilterMenu = document.getElementById("timeFilterMenu");
+
+timeFilterBtn?.addEventListener("click", () => {
+  timeFilterMenu.classList.toggle("hidden");
+});
+
+timeFilterMenu?.addEventListener("click", async (e) => {
+  if (e.target.tagName === "LI") {
+    const value = e.target.dataset.value;
+    timeFilterBtn.textContent = e.target.textContent + " ▾";
+    timeFilterMenu.classList.add("hidden");
+    await renderSavedList(value ? Number(value) : undefined);
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (!timeFilterBtn.contains(e.target) && !timeFilterMenu.contains(e.target)) {
+    timeFilterMenu.classList.add("hidden");
+  }
+});
+

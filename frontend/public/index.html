@@ -105,20 +105,38 @@
         </section>
       </article>
 
-      <!-- back to chat btn -->
       <button class="btnBackToChat btn-ghost">⬅ Back to Chat</button>
     </section>
 
     <!-- SAVED PANEL -->
     <section class="panel" data-panel="saved" hidden>
       <h2 class="saved-title">Saved Recipes</h2>
-      <div id="savedList" class="grid"></div>
 
-      <!-- back to chat btn -->
+      <!-- Filter dropdown :D-->
+      <div class="filter-row">
+        <span class="filter-label">Show recipes under:</span>
+        <div class="custom-select">
+          <button id="timeFilterBtn" class="btn">All ▾</button>
+          <ul id="timeFilterMenu" class="custom-select-menu hidden">
+            <li data-value="">All</li>
+            <li data-value="5">5 min</li>
+            <li data-value="10">10 min</li>
+            <li data-value="15">15 min</li>
+            <li data-value="30">30 min</li>
+            <li data-value="60">1 hour</li>
+            <li data-value="120">2 hours</li>
+            <li data-value="180">3 hours</li>
+          </ul>
+        </div>
+      </div>
+
+
+
+      <div id="savedList" class="grid"></div>
       <button class="btnBackToChat btn-ghost">⬅ Back to Chat</button>
     </section>
 
-    <!-- Status bar (no pop-ups) -->
+    <!-- Status bar -->
     <div id="statusBar" style="margin-top:12px;color:#6b7280;"></div>
   </div>
 

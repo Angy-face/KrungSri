@@ -198,6 +198,7 @@ body{
   .message-content{ max-width: 88%; }
 }
 
+/*back to char btn :D*/
 .btnBackToChat {
   display: block;
   margin: 1rem auto;              
@@ -221,6 +222,159 @@ body{
 
 .btnBackToChat:active {
   background: #e5e7eb;            
+}
+/* Style for the recipe time filter dropdown */
+#timeFilter {
+  appearance: none;           /* remove browser default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-color: #fff;     /* same as cards */
+  border: 1px solid #d1d5db;  /* neutral gray border */
+  border-radius: 9999px;      /* pill shape */
+  padding: 6px 1.75rem 6px 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;             /* dark gray text */
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Hover + focus */
+#timeFilter:hover,
+#timeFilter:focus {
+  border-color: #f97316;      /* orange accent */
+  box-shadow: 0 0 0 2px rgba(249,115,22,0.3);
+  outline: none;
+}
+
+/* Add custom dropdown arrow */
+#timeFilter {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%236b7280' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 1rem;
+}
+
+/* For dark mode (if you add later) */
+body.dark #timeFilter {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+/* Custom dropdown */
+.custom-select {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-select .btn {
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  padding: 6px 1.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.custom-select .btn:hover {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249,115,22,0.3);
+}
+
+/* Dropdown menu */
+.custom-select-menu {
+  position: absolute;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.custom-select-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.custom-select-menu li:hover {
+  background: #fef3c7; /* light orange */
+  color: #b45309;
+}
+
+.hidden {
+  display: none;
+}
+/* Custom pretty dropdown */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.custom-select .btn {
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 8px 1.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.custom-select .btn:hover {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+  z-index: 20;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.custom-select-menu li {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.custom-select-menu li:hover {
+  background: var(--accent-soft);
+  color: #b45309;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 

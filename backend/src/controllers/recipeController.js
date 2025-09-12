@@ -16,10 +16,21 @@ export const createItem = async (req, res) => {
   }
 };
 
+//with recipe fillter :D
 export const getItems = async (req, res) => {
-  const items = await Recipe.find();
-  res.status(200).json(items);
+  try {
+    let filter = {};
+    if (req.query.time) {
+      filter.time = { $lt: Number(req.query.time) };
+    }
+
+    const items = await Recipe.find(filter);
+    res.status(200).json(items);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
+
 
 export const deleteItem = async (req, res) => {
   try {

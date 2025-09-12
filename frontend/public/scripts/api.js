@@ -6,7 +6,12 @@ const ok = async (r) => { if (!r.ok) throw new Error(await r.text()); return r.j
 
 export const api = {
   // CRUD
-  listRecipes: () => fetch(`${API_BASE}/recipes`).then(ok),
+  listRecipes: (time) => {
+    let url = `${API_BASE}/recipes`;
+    if (time) url += `?time=${time}`;
+    return fetch(url).then(ok);
+  },//+filter time :D
+
   createRecipe: (data) =>
     fetch(`${API_BASE}/recipes`, { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(data) }).then(ok),
   deleteRecipe: (id) =>
@@ -19,4 +24,8 @@ export const api = {
   // backend expects raw base64 (without data URL header); it will prepend "data:image/jpeg;base64," itself
   generateByImageBase64: (base64Image) =>
     fetch(`${API_BASE}/recipes/chef-image`, { method: "POST", headers: JSON_HEADERS, body: JSON.stringify({ base64Image }) }).then(ok),
+
+
 };
+
+
