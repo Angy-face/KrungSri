@@ -315,6 +315,15 @@ btnDelete?.addEventListener('click', async ()=>{
   setStatus('Recipe deleted.', 'success');
 });
 
+// Back to Chat buttons (all panels)
+document.querySelectorAll('.btnBackToChat').forEach(btn => {
+  btn.addEventListener('click', () => switchTab('chat'));
+});
+
+
+
+
+
 /* =========================
    Saved list (with event delegation)
    ========================= */

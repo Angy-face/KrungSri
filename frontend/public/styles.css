@@ -197,3 +197,30 @@ body{
   .nav-tabs{ flex-direction: column; }
   .message-content{ max-width: 88%; }
 }
+
+.btnBackToChat {
+  display: block;
+  margin: 1rem auto;              
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;         
+  background: #f9fafb;            
+  color: #374151;                 
+  font-size: 0.9rem;              /* match other buttons */
+  font-family: inherit;           /* inherit your app’s font */
+  font-weight: 500;               /* same as other btns */
+  border: 1px solid #d1d5db;      
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btnBackToChat:hover {
+  background: #f3f4f6;            
+  border-color: #9ca3af;          
+  color: #111827;                 /* slightly darker on hover */
+}
+
+.btnBackToChat:active {
+  background: #e5e7eb;            
+}
+
+
