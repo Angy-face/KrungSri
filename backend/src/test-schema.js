@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Recipe from "./models/recipe.js";
+import Recipe from "./models/recipeModel.js";
 import dotenv from 'dotenv';
 import "./config/db.js";
 
