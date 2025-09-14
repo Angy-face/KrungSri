@@ -322,16 +322,20 @@ async function renderSavedList(time) {
     }
     savedList.innerHTML = items.map(item => {
       const timeText = (item.time!=null) ? `${item.time} min` : '';
+      const caloriesText = item.nutrition?.calories ? `${item.nutrition.calories} kcal` : '';
       return `
         <article class="card" data-id="${item._id}">
           <div class="card-body">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <strong>${escapeHTML(item.name || 'Untitled')}</strong>
-              ${timeText ? `<span class="pill">${timeText}</span>` : ``}
+            <div style="margin-bottom:16px;">
+              <strong style="display:block;font-size:16px;margin-bottom:4px;">${escapeHTML(item.name || 'Untitled')}</strong>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                ${timeText ? `<span class="pill" style="font-size:12px;">${timeText}</span>` : ``}
+                ${caloriesText ? `<span class="pill" style="font-size:12px;background:#f0f9ff;color:#0369a1;">${caloriesText}</span>` : ``}
+              </div>
             </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn-ghost open-recipe">Open</button>
-              <button class="btn-ghost danger delete-recipe">Delete</button>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button class="btn-ghost open-recipe" style="padding:6px 12px;font-size:14px;">📖 Open</button>
+              <button class="btn-ghost danger delete-recipe" style="padding:6px 12px;font-size:14px;">🗑️ Delete</button>
             </div>
           </div>
         </article>`;
