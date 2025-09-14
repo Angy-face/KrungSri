@@ -9,7 +9,7 @@ export const createItem = async (req, res) => {
     res.status(200).json({ message: "OK" });
   } catch (err) {
     if (err.name === "ValidationError") {
-      res.status(400).json({ error: "Bad Request" });
+      res.status(400).json({ error: "Bad Request" , details: err.message});
     } else {
       res.status(500).json({ error: "Internal server error." });
     }
@@ -54,15 +54,16 @@ export const chef = async (req, res) => {
     if (!foodName) {
       return res.status(400).json({ error: "foodName is required" });
     }
-    
+    console.log(foodName)
     const generatedRecipe = await generateRecipe(foodName);
     
     // Replace req.body with generated recipe and call createItem
-    req.body = generatedRecipe;
-    await createItem(req, res);
+    res.status(200).json(generatedRecipe);
+    // req.body = generatedRecipe;
+    // await createItem(req, res);
     
   } catch (err) {
-    res.status(500).json({ error: "Failed to generate and save recipe" });
+    res.status(500).json({ error: "Failed to generate and save recipe" , details: err.message});
   }
 };
 
@@ -79,9 +80,9 @@ export const chefImage = async (req, res) => {
     const generatedRecipe = await generateRecipeFromImage(base64Image);
     
     // Save using createItem
-    req.body = generatedRecipe;
-    await createItem(req, res);
-    
+    // req.body = generatedRecipe;
+    // await createItem(req, res);
+    res.status(200).json(generatedRecipe);
   } catch (err) {
     console.error("Image processing error:", err.message);
     res.status(500).json({ error: "Failed to generate recipe from image", details: err.message });
