@@ -84,10 +84,26 @@ fileInput.addEventListener('change', e=>{
 });
 function handleFile(file){
   const r = new FileReader();
-  r.onload = e => {
+  r.onload = async e => {
     renderPreview(e.target.result, file.name);
-    addBotMessage('Great! I can see your food photo. What recipe would you like me to create?');
     setStatus('Photo loaded.', 'success');
+    
+    // Auto-generate recipe from image
+    const loadingMsg = addBotMessage('🔄 Analyzing image and generating recipe...');
+    
+    try {
+      const base64 = dataURLtoRawBase64(e.target.result);
+      const recipe = await api.generateByImageBase64(base64);
+      loadingMsg.remove();
+      addBotMessage('Recipe generated from your image! Check the Recipe tab to view it.');
+      renderRecipe(toUIRecipe(recipe));
+      switchTab('recipe');
+      setStatus('Recipe generated successfully!', 'success');
+    } catch (error) {
+      loadingMsg.remove();
+      addBotMessage('Sorry, I couldn\'t generate a recipe from this image. Please try again.');
+      setStatus('Failed to generate recipe from image.', 'error');
+    }
   };
   r.readAsDataURL(file);
 }
@@ -121,13 +137,35 @@ function addBotMessage(html){
   wrap.className = 'chat-message bot-message';
   wrap.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${html}</div>`;
   chatContainer.appendChild(wrap); autoscroll();
+  return wrap;
 }
-function sendMessage(){
+async function sendMessage(){
   const text = chatInput.value.trim();
   if (!text){ setStatus('Please type a dish name or a question first.', 'error'); chatInput.focus(); return; }
-  addUserMessage(text); chatInput.value=''; chatInput.focus();
+  
+  addUserMessage(text); 
+  chatInput.value=''; 
   sendBtn.disabled = true;
-  setTimeout(()=>{ addBotMessage('Got it! I will prepare a detailed recipe.'); sendBtn.disabled = false; }, 500);
+  
+  // Add loading message
+  const loadingMsg = addBotMessage('🔄 Generating recipe...');
+  
+  try {
+    const recipe = await api.generateByText(text);
+    // Remove loading message
+    loadingMsg.remove();
+    addBotMessage('Recipe generated! Check the Recipe tab to view it.');
+    renderRecipe(toUIRecipe(recipe));
+    switchTab('recipe');
+    setStatus('Recipe generated successfully!', 'success');
+  } catch (error) {
+    loadingMsg.remove();
+    addBotMessage('Sorry, I couldn\'t generate a recipe. Please try again.');
+    setStatus('Failed to generate recipe.', 'error');
+  } finally {
+    sendBtn.disabled = false;
+    chatInput.focus();
+  }
 }
 
 /* =========================
@@ -155,7 +193,15 @@ function toUIRecipe(b){
     servings: 2,
     estimatedCalories: b.nutrition?.calories,
     nutrition: nutritionText,
-    meta: (b.time!=null) ? `${b.time} min` : ""
+    meta: (b.time!=null) ? `${b.time} min` : "",
+    // Store original backend data for easy saving
+    _backendData: {
+      name: b.name,
+      time: b.time,
+      ingredients: b.ingredients,
+      instructions: b.instructions,
+      nutrition: b.nutrition
+    }
   };
 }
 
@@ -187,6 +233,12 @@ function renderRecipe(data){
   rNutri.textContent = data.nutrition || '';
 
   servEl.textContent = servings;
+  
+  // Show save button only if recipe doesn't have _id (not saved yet)
+  if (btnSave) {
+    btnSave.style.display = data._id ? 'none' : 'inline-block';
+  }
+  
   setStatus('Recipe ready.', 'success');
 }
 
@@ -198,6 +250,38 @@ document.getElementById('servDec').addEventListener('click', ()=> {
 });
 document.getElementById('servInc').addEventListener('click', ()=> {
   servEl.textContent = (parseInt(servEl.textContent||'1',10) + 1);
+});
+
+btnSave?.addEventListener('click', async ()=> {
+  if (!currentRecipe){ setStatus('No recipe to save.', 'error'); return; }
+  try {
+    // Use stored backend data if available, otherwise convert UI format
+    const backendRecipe = currentRecipe._backendData || {
+      name: currentRecipe.title,
+      time: parseInt(currentRecipe.meta) || 30,
+      ingredients: currentRecipe.ingredients.map(ing => ({
+        name: ing.name,
+        amount: ing.qty.split(' ')[0] || '1',
+        unit: ing.qty.split(' ').slice(1).join(' ') || ''
+      })),
+      instructions: currentRecipe.steps.map((step, index) => ({
+        step: index + 1,
+        description: step
+      })),
+      nutrition: {
+        calories: currentRecipe.estimatedCalories || 0,
+        carbs: 0,
+        protein: 0,
+        fat: 0
+      }
+    };
+    console.log(backendRecipe);
+    await api.createRecipe(backendRecipe);
+    btnSave.style.display = 'none'; // Hide save button after saving
+    setStatus('Recipe saved successfully!', 'success');
+  } catch (error) {
+    setStatus('Failed to save recipe.', 'error');
+  }
 });
 
 btnDelete?.addEventListener('click', async ()=> {
@@ -238,16 +322,20 @@ async function renderSavedList(time) {
     }
     savedList.innerHTML = items.map(item => {
       const timeText = (item.time!=null) ? `${item.time} min` : '';
+      const caloriesText = item.nutrition?.calories ? `${item.nutrition.calories} kcal` : '';
       return `
         <article class="card" data-id="${item._id}">
           <div class="card-body">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <strong>${escapeHTML(item.name || 'Untitled')}</strong>
-              ${timeText ? `<span class="pill">${timeText}</span>` : ``}
+            <div style="margin-bottom:16px;">
+              <strong style="display:block;font-size:16px;margin-bottom:4px;">${escapeHTML(item.name || 'Untitled')}</strong>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                ${timeText ? `<span class="pill" style="font-size:12px;">${timeText}</span>` : ``}
+                ${caloriesText ? `<span class="pill" style="font-size:12px;background:#f0f9ff;color:#0369a1;">${caloriesText}</span>` : ``}
+              </div>
             </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn-ghost open-recipe">Open</button>
-              <button class="btn-ghost danger delete-recipe">Delete</button>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button class="btn-ghost open-recipe" style="padding:6px 12px;font-size:14px;">📖 Open</button>
+              <button class="btn-ghost danger delete-recipe" style="padding:6px 12px;font-size:14px;">🗑️ Delete</button>
             </div>
           </div>
         </article>`;
