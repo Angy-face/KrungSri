@@ -43,6 +43,7 @@ const rEmpty = document.getElementById('recipeEmpty');
 const servEl = document.getElementById('servings');
 const btnDelete = document.getElementById('btnDelete');
 const btnSave   = document.getElementById('btnSave'); // optional
+const btnEdit   = document.getElementById('btnEdit');
 const btnClose = document.getElementById('btnClose');
 const savedList = document.getElementById('savedList');
 const statusBar = document.getElementById('statusBar');
@@ -238,6 +239,10 @@ function renderRecipe(data){
   if (btnSave) {
     btnSave.style.display = data._id ? 'none' : 'inline-block';
   }
+  // Show edit button only if recipe has _id (already saved)
+  if (btnEdit) {
+    btnEdit.style.display = data._id ? 'inline-block' : 'none';
+  }
   
   setStatus('Recipe ready.', 'success');
 }
@@ -281,6 +286,70 @@ btnSave?.addEventListener('click', async ()=> {
     setStatus('Recipe saved successfully!', 'success');
   } catch (error) {
     setStatus('Failed to save recipe.', 'error');
+  }
+});
+
+let isEditing = false;
+
+btnEdit?.addEventListener('click', async () => {
+  if (!currentRecipe || !currentRecipe._id) { setStatus('No saved recipe to edit.', 'error'); return; }
+  
+  if (!isEditing) {
+    // Enter edit mode
+    isEditing = true;
+    
+    // Make title editable
+    const titleEl = rTitle.querySelector('h2') || rTitle;
+    titleEl.contentEditable = true;
+    titleEl.style.border = '1px solid #ccc';
+    titleEl.style.padding = '4px';
+    titleEl.focus();
+    
+    // Make ingredients editable
+    const ingredientItems = rIng.querySelectorAll('li');
+    ingredientItems.forEach(li => {
+      li.contentEditable = true;
+      li.style.border = '1px solid #ccc';
+      li.style.padding = '2px';
+    });
+    
+    btnEdit.textContent = 'Save Changes';
+  } else {
+    // Save changes
+    try {
+      const titleEl = rTitle.querySelector('h2') || rTitle;
+      const ingredientItems = rIng.querySelectorAll('li');
+      
+      const newName = titleEl.textContent.trim();
+      const ingredients = Array.from(ingredientItems).map(li => {
+        const text = li.textContent.trim();
+        const parts = text.split(' ');
+        const amount = parts[0] || '1';
+        const name = parts.slice(1).join(' ') || parts[0];
+        return { name, amount };
+      });
+      
+      await api.updateRecipe(currentRecipe._id, { name: newName, ingredients });
+      currentRecipe.name = newName;
+      currentRecipe.ingredients = ingredients;
+      
+      // Reset UI
+      titleEl.contentEditable = false;
+      titleEl.style.border = 'none';
+      titleEl.style.padding = '0';
+      ingredientItems.forEach(li => {
+        li.contentEditable = false;
+        li.style.border = 'none';
+        li.style.padding = '0';
+      });
+      
+      btnEdit.textContent = 'Edit';
+      isEditing = false;
+      setStatus('Recipe updated successfully!', 'success');
+    } catch (error) {
+      console.error('Update error:', error);
+      setStatus(`Failed to update recipe: ${error.message}`, 'error');
+    }
   }
 });
 

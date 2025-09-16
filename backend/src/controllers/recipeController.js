@@ -47,6 +47,24 @@ export const deleteItem = async (req, res) => {
   }
 };
 
+export const updateItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedRecipe = await Recipe.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    
+    if (!updatedRecipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+    res.status(200).json(updatedRecipe);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      res.status(400).json({ error: "Bad Request", details: err.message });
+    } else {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+};
+
 export const chef = async (req, res) => {
   try {
     const { foodName } = req.body;

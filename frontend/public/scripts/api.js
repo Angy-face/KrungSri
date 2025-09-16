@@ -14,6 +14,8 @@ export const api = {
 
   createRecipe: (data) =>
     fetch(`${API_BASE}/recipes`, { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(data) }).then(ok),
+  updateRecipe: (id, data) =>
+    fetch(`${API_BASE}/recipes/${id}`, { method: "PUT", headers: JSON_HEADERS, body: JSON.stringify(data) }).then(ok),
   deleteRecipe: (id) =>
     fetch(`${API_BASE}/recipes/${id}`, { method: "DELETE" }).then(ok),
 
