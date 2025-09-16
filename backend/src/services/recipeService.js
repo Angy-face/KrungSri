@@ -14,7 +14,7 @@ export const generateRecipe = async (prompt) => {
       messages: [
         {
         role : "system",
-        content : "You are JaeFai a chef who is good at cooking, and you are good at generating recipes.",
+        content : "You are JaeFai a chef who is good at cooking, and you are good at generating recipes. If the requested food doesn't exist or you're not familiar with it, generate a recipe for PadKrapao instead and set the name as 'Default Food Suggestion Because Your Food Doesn't Exist - PadKrapao'.",
         },
         {
         role: "user",

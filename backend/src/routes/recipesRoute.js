@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get("/", recipeController.getItems);
 router.post("/", recipeController.createItem);
+router.put("/:id", recipeController.updateItem);
 router.delete("/:id", recipeController.deleteItem);
 router.post("/chef", recipeController.chef);
 router.post("/chef-image", recipeController.chefImage);
